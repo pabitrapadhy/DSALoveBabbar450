@@ -1,6 +1,5 @@
 #include<iostream>
 #include<vector>
-#include<unordered_map>
 
 using namespace std;
 
@@ -11,33 +10,67 @@ void Print(vector<int> const& arr) {
     cout << endl;
 }
 
-bool HasZeroSum(vector<int> const& arr) {
-    bool flag{false};
-    unordered_map<int, int> prefixSumMap{};
+void RearrangeAlternateSignWithOrder(vector<int>& arr) {
+    vector<int> posArray{}, negArray{}, result{};
+    int len{static_cast<int>(arr.size())};
 
-    int pSum{};
-    for (int i = 0; i < arr.size(); ++i) {
-        pSum += arr[i]; // prefix sum
-        
-        if (arr[i] == 0) { // 1. element is 0
-            flag |= true;
-        } else if (pSum == 0) { // 2. prefix sum is 0
-            flag |= true;
-        } else { // 3. prefix sum repeats
-            auto it = prefixSumMap.find(pSum); // checks if prefix is present
-            if (it != prefixSumMap.end()) {
-                flag |= true;
-            }
-        }
-
-        prefixSumMap[pSum] = i; // adds to the map
+    for (int i = 0; i < len; ++i) {
+        arr[i] >= 0 ? posArray.push_back(arr[i]) : negArray.push_back(arr[i]);
     }
 
-    return flag;
+    int i{}, j{}, k{};
+    int lenPos{static_cast<int>(posArray.size())};
+    int lenNeg{static_cast<int>(negArray.size())};
+
+    while (i < lenPos && j < lenNeg) {
+        if (k%2 == 0 && j < lenNeg) {
+            result.push_back(negArray[j]);
+            ++j; ++k;
+        } else if (k%2 == 1 && i < lenPos) {
+            result.push_back(posArray[i]);
+            ++i; ++k;
+        }
+    }
+
+    while (i < lenPos) {
+        result.push_back(posArray[i]);
+        ++i;
+    }
+    while (j < lenNeg) {
+        result.push_back(negArray[j]);
+        ++j;
+    }
+
+    arr = result;
+}
+
+void RearrangeAlternateSignWithoutOrder(vector<int>& arr) {
+    int len{static_cast<int>(arr.size())};
+    int p{};
+
+    // arrange all negative to left and all positive to right.
+    for (int i = 0; i < len; ++i) {
+        if (arr[i] < 0) {
+            swap(arr[i], arr[p]);
+            ++p;
+        }
+    }
+
+    for (int i = 0; i < p && p < len; ++i) {
+        if (i%2 == 0) {
+            continue;
+        } else {
+            swap(arr[i], arr[p]);
+            ++p;
+        }
+    }
 }
 
 int main() {
-    // vector<int> arr{0,0,0};
-    vector<int> arr{1,1,-2};
-    cout << boolalpha << HasZeroSum(arr);
+    // vector<int> arr{-5,4,3,-2,1,9,7,-4};
+    // RearrangeAlternateSignWithOrder(arr);
+
+    vector<int> arr{-2,-3,1,2,3,4,-5,2};
+    RearrangeAlternateSignWithoutOrder(arr);
+    Print(arr);
 }

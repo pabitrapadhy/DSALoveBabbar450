@@ -3,74 +3,72 @@
 
 using namespace std;
 
-void Print(vector<int> const& arr) {
-    for (auto const& item : arr) {
+using VecInt = vector<int>;
+using VecIntCR = vector<int> const&;
+using IIPair = pair<int, int>;
+using IIPairCR = pair<int, int> const&;
+
+void Print(VecIntCR result) {
+    for (auto const& item : result) {
         cout << item << " ";
     }
     cout << endl;
 }
 
-void RearrangeAlternateSignWithOrder(vector<int>& arr) {
-    vector<int> posArray{}, negArray{}, result{};
-    int len{static_cast<int>(arr.size())};
-
-    for (int i = 0; i < len; ++i) {
-        arr[i] >= 0 ? posArray.push_back(arr[i]) : negArray.push_back(arr[i]);
-    }
-
-    int i{}, j{}, k{};
-    int lenPos{static_cast<int>(posArray.size())};
-    int lenNeg{static_cast<int>(negArray.size())};
-
-    while (i < lenPos && j < lenNeg) {
-        if (k%2 == 0 && j < lenNeg) {
-            result.push_back(negArray[j]);
-            ++j; ++k;
-        } else if (k%2 == 1 && i < lenPos) {
-            result.push_back(posArray[i]);
-            ++i; ++k;
-        }
-    }
-
-    while (i < lenPos) {
-        result.push_back(posArray[i]);
-        ++i;
-    }
-    while (j < lenNeg) {
-        result.push_back(negArray[j]);
-        ++j;
-    }
-
-    arr = result;
+IIPairCR FindMin(IIPairCR x, IIPairCR y, IIPairCR z) {
+    IIPairCR k{x < y ? x : y};
+    return z < k ? z : k;
 }
 
-void RearrangeAlternateSignWithoutOrder(vector<int>& arr) {
-    int len{static_cast<int>(arr.size())};
-    int p{};
+VecInt FindCommonElements(VecIntCR A, VecIntCR B, VecIntCR C) {
+    VecInt result{};
 
-    // arrange all negative to left and all positive to right.
-    for (int i = 0; i < len; ++i) {
-        if (arr[i] < 0) {
-            swap(arr[i], arr[p]);
-            ++p;
-        }
-    }
+    int lenA{static_cast<int>(A.size())};
+    int lenB{static_cast<int>(B.size())};
+    int lenC{static_cast<int>(C.size())};
 
-    for (int i = 0; i < p && p < len; ++i) {
-        if (i%2 == 0) {
-            continue;
+    int p{}, q{}, r{};
+
+    while (p < lenA && q < lenB && r < lenC) {
+        if (A[p] == B[q] && B[q] == C[r]) {
+            if (result.empty() || result[result.size()-1] != A[p]) {
+                result.push_back(A[p]);
+            }
+            ++p, ++q, ++r;
         } else {
-            swap(arr[i], arr[p]);
-            ++p;
+            IIPair x{A[p], p};
+            IIPair y{B[q], q};
+            IIPair z{C[r], r};
+
+            IIPairCR minPair{FindMin(x, y, z)};
+            const int& minItem{minPair.first};
+            
+            if (minItem == A[p]) {
+                ++p;
+            } else if (minItem == B[q]) {
+                ++q;
+            } else {
+                ++r;
+            }
         }
     }
+
+    return result;
 }
 
 int main() {
-    // vector<int> arr{-5,4,3,-2,1,9,7,-4};
-    // RearrangeAlternateSignWithOrder(arr);
+    // VecInt A{3,4,5,6,7,8};
+    // VecInt B{3,5,9};
+    // VecInt C{3,5,9,11,14};
 
-    vector<int> arr{-2,-3,1,2,3,4,-5,2};
-    RearrangeAlternateSignWithoutOrder(arr);
-    Print(arr);
+    // VecInt A{1,5,10,20,40,80};
+    // VecInt B{6,7,20,80,100};
+    // VecInt C{3,4,15,20,30,70,80,120};
+
+    VecInt A{1,1,1,1};
+    VecInt B{1,1,1,1};
+    VecInt C{1,1,1,1};
+
+    VecIntCR result{FindCommonElements(A, B, C)};
+    Print(result);
 }

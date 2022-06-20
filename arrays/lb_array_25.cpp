@@ -1,66 +1,72 @@
 #include<iostream>
 #include<vector>
 #include<algorithm>
+#include<unordered_map>
 
 using namespace std;
 
-/* LEGENDS:
-pibt = profit if bought today
-mpibat = profit if bought today or sometime after today
-pist = profit is sold today
-mpistt = max profit if sold anytime till today including.
-*/
+void Print(vector<int> const& arr) {
+    for (auto const& item : arr) {
+        cout << item << " ";
+    }
+    cout << endl;
+}
 
-int StockBuyAndSellAtmostTwice(vector<int> const& arr) {
+vector<int> ElementFrequencyGreaterThanX(vector<int>& arr, int const K) {
     int len{static_cast<int>(arr.size())};
-    if (len == 0) {
-        return 0;
+
+    if (K > len) {
+        return {};
+    } else {
+        sort(arr.begin(), arr.end());
+
+        vector<int> ans{};
+        int count{1};
+        int item{arr[0]};
+        int X{len/K};
+        
+        for (int i = 1; i < len; ++i) {
+            if (item == arr[i]) {
+                ++count;
+                
+                if (count == X + 1) {
+                    ans.push_back(item); // only add for once
+                }
+            } else {
+                item = arr[i]; // new item found
+                count = 1; // reset count
+            }
+        }
+        return ans;
     }
-    
-    // 1. max profit from left
-    int pist{}, mpistt{};
-    int mini{arr[0]};
-    vector<int> profitLeft{};
-    profitLeft.push_back(0);
+}
 
-    for (int i = 1; i < len; ++i) {
-        mini = min(mini, arr[i]);
-        pist = arr[i]-mini;
-        mpistt = max(pist, mpistt);
-        profitLeft.push_back(mpistt);
+vector<int> ElementFrequencyGreaterThanXOptimal(vector<int> const& arr, int const K) {
+    int len{static_cast<int>(arr.size())};
+
+    if (K > len) {
+        return {};
+    } else {
+        unordered_map<int, int> mp{};
+        vector<int> ans{};
+
+        int count{};
+        int X{len/K};
+
+        for (int i = 0; i < len; ++i) {
+            if (++mp[arr[i]] == X+1) {
+                ans.push_back(arr[i]);
+                ++count;
+            }
+        }
+        return ans;
     }
-
-    // 2. max profit from right
-    int pibt{}, mpibat{};
-    int maxi{arr[len-1]};
-    vector<int> profitRight{};
-    profitRight.push_back(0);
-
-    for (int i = len-2; i >= 0; --i) {
-        maxi = max(maxi, arr[i]);
-        pibt = maxi-arr[i];
-        mpibat = max(pibt, mpibat);
-        profitRight.push_back(mpibat);
-    }
-
-    // reverse the profitRight
-    reverse(profitRight.begin(), profitRight.end());
-
-    // 3. cumulative max profit for both transactions
-    int maxProfit{}, sum{};
-    for (int i = 0; i < len; ++i) {
-        sum = profitLeft[i] + profitRight[i];
-        maxProfit = max(maxProfit, sum);
-    }
-
-    return maxProfit;
 }
 
 int main() {
-    // vector<int> arr{10,22,5,75,65,80}; // correct
-    // vector<int> arr{2,30,15,10,8,25,80}; // correct
-    // vector<int> arr{90,80,70,60,50}; // correct
-    vector<int> arr{100,30,15,10,8,25,80}; // correct
-
-    cout << StockBuyAndSellAtmostTwice(arr);
+    vector<int> arr{3,1,2,2,1,2,3,3};
+    // vector<int> arr{};
+    // auto result{ElementFrequencyGreaterThanX(arr, 4)};
+    auto result{ElementFrequencyGreaterThanXOptimal(arr, 4)};
+    Print(result);
 }

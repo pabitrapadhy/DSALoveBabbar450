@@ -1,75 +1,43 @@
 #include<iostream>
-#include<deque>
+#include<vector>
+#include<unordered_map>
 
 using namespace std;
 
-template<typename T>
-void Print(T const& arr) {
-    for (auto const& i : arr) {
-        cout << i << " ";
+void Print(vector<int> const& arr) {
+    for (auto const& item : arr) {
+        cout << item << " ";
     }
     cout << endl;
 }
 
-template<typename T>
-void AppendCarryDigits(T& arr, int carry, int& digitCount) {
-    if (carry == 0) {
-        return;
-    }
+bool HasZeroSum(vector<int> const& arr) {
+    bool flag{false};
+    unordered_map<int, int> prefixSumMap{};
 
-    int p{carry%10};
-    AppendCarryDigits(arr, carry/10, digitCount);
-    arr.push_back(p);
-    ++digitCount;
-}
-
-template<typename T>
-void RotateByOne(T& arr) {
-    int len{static_cast<int>(arr.size())};
-    if (len == 1) {
-        return;
-    }
-
-    int carry{arr[len-1]};
-    for (int j = len-1; j > 0; --j) {
-        arr[j] = arr[j-1];
-    }
-    arr[0] = carry;
-}
-
-template<typename T>
-T FindFactorial(int N) {
-    T ans{1};
-    if (N < 2) {
-        return ans;
-    }
-
-    for (int i = 2; i <= N; ++i) {
-        int x{}, carry{};
-        int k{static_cast<int>(ans.size())};
-
-        for (int j = 0; j < k; ++j) {    
-            x = (i * ans[k-1-j]) + carry;
-            ans[k-1-j] = x%10;
-            carry = x/10;
-
-            Print(ans);
-        }
-
-        if (carry > 0) {
-            int carryDigits{};
-            AppendCarryDigits(ans, carry, carryDigits);
-
-            for (int i = 0; i < carryDigits; ++i) {
-                RotateByOne(ans);
+    int pSum{};
+    for (int i = 0; i < arr.size(); ++i) {
+        pSum += arr[i]; // prefix sum
+        
+        if (arr[i] == 0) { // 1. element is 0
+            flag |= true;
+        } else if (pSum == 0) { // 2. prefix sum is 0
+            flag |= true;
+        } else { // 3. prefix sum repeats
+            auto it = prefixSumMap.find(pSum); // checks if prefix is present
+            if (it != prefixSumMap.end()) {
+                flag |= true;
             }
         }
+
+        prefixSumMap[pSum] = i; // adds to the map
     }
-    return ans;
+
+    return flag;
 }
 
 int main() {
-    int N{1000};
-    auto result{FindFactorial<deque<int>>(N)};
-    Print(result);
+    // vector<int> arr{0,0,0};
+    vector<int> arr{1,1,-2};
+    cout << boolalpha << HasZeroSum(arr);
 }

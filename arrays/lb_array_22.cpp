@@ -1,45 +1,75 @@
 #include<iostream>
-#include<vector>
-#include<algorithm>
+#include<deque>
 
 using namespace std;
-using LL = long long;
 
-LL MaximumProductSubarray(vector<int> const& arr) {
+template<typename T>
+void Print(T const& arr) {
+    for (auto const& i : arr) {
+        cout << i << " ";
+    }
+    cout << endl;
+}
+
+template<typename T>
+void AppendCarryDigits(T& arr, int carry, int& digitCount) {
+    if (carry == 0) {
+        return;
+    }
+
+    int p{carry%10};
+    AppendCarryDigits(arr, carry/10, digitCount);
+    arr.push_back(p);
+    ++digitCount;
+}
+
+template<typename T>
+void RotateByOne(T& arr) {
     int len{static_cast<int>(arr.size())};
     if (len == 1) {
-        return arr[0];
+        return;
     }
 
-    LL maxProd{arr[0]};
-    LL mini{arr[0]}, maxi{arr[0]};
+    int carry{arr[len-1]};
+    for (int j = len-1; j > 0; --j) {
+        arr[j] = arr[j-1];
+    }
+    arr[0] = carry;
+}
 
-    for (int i = 1; i < len; ++i) {
-        LL item{static_cast<LL>(arr[i])};
-        if (item < 0) {
-            swap(mini, maxi);
-        }
-
-        maxi = max(maxi*item, item); // calculating new maxi
-        mini = min(mini*item, item); // calculating new mini
-
-        if (maxi > maxProd) { // updating maxProd
-            maxProd = maxi;
-        }
-
-        if (item == 0) { // for the next item
-            maxi = 1;
-            mini = 1;
-        }
+template<typename T>
+T FindFactorial(int N) {
+    T ans{1};
+    if (N < 2) {
+        return ans;
     }
 
-    return maxProd;
+    for (int i = 2; i <= N; ++i) {
+        int x{}, carry{};
+        int k{static_cast<int>(ans.size())};
+
+        for (int j = 0; j < k; ++j) {    
+            x = (i * ans[k-1-j]) + carry;
+            ans[k-1-j] = x%10;
+            carry = x/10;
+
+            Print(ans);
+        }
+
+        if (carry > 0) {
+            int carryDigits{};
+            AppendCarryDigits(ans, carry, carryDigits);
+
+            for (int i = 0; i < carryDigits; ++i) {
+                RotateByOne(ans);
+            }
+        }
+    }
+    return ans;
 }
 
 int main() {
-    // vector<int> arr{-1,2,4,-3,0,1,7,7};
-    // vector<int> arr{6,-3,-10,0,2};
-    // vector<int> arr{2,3,4,5,-1,0};
-    vector<int> arr{-1,0};
-    cout << MaximumProductSubarray(arr);
+    int N{1000};
+    auto result{FindFactorial<deque<int>>(N)};
+    Print(result);
 }

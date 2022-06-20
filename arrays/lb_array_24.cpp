@@ -1,72 +1,92 @@
 #include<iostream>
+#include<string>
 #include<vector>
 #include<algorithm>
 #include<unordered_map>
 
 using namespace std;
 
-void Print(vector<int> const& arr) {
-    for (auto const& item : arr) {
-        cout << item << " ";
-    }
-    cout << endl;
-}
-
-vector<int> ElementFrequencyGreaterThanX(vector<int>& arr, int const K) {
-    int len{static_cast<int>(arr.size())};
-
-    if (K > len) {
-        return {};
-    } else {
-        sort(arr.begin(), arr.end());
-
-        vector<int> ans{};
-        int count{1};
-        int item{arr[0]};
-        int X{len/K};
-        
-        for (int i = 1; i < len; ++i) {
-            if (item == arr[i]) {
-                ++count;
-                
-                if (count == X + 1) {
-                    ans.push_back(item); // only add for once
-                }
-            } else {
-                item = arr[i]; // new item found
-                count = 1; // reset count
-            }
-        }
-        return ans;
+void Subsequence(string const& str, string prefix, int start, int const& N) {
+    for (int i = start; i < N; ++i) {
+        string subSeq{prefix+str[i]};
+        cout << subSeq << " ";
+        Subsequence(str, subSeq, i+1, N);
+        cout << endl;
     }
 }
 
-vector<int> ElementFrequencyGreaterThanXOptimal(vector<int> const& arr, int const K) {
+int LongestConsecutiveSubsequence(vector<int>& arr) {
+    int N{static_cast<int>(arr.size())};
+    if (N == 0) {
+        return 0;
+    } else if (N == 1) {
+        return 1;
+    }
+
+    sort(arr.begin(), arr.end());
+
+    int max{1}, count{1};
+    for (int i = 1; i < N; ++i) {
+        if (arr[i-1] == arr[i]) {
+            continue;
+        } else if (arr[i-1] + 1 == arr[i]) {
+            if (++count > max) {
+                max = count;
+            }
+        } else {
+            count = 1; // for next subsequence
+        }
+    }
+    return max;
+}
+
+int LongestConsecutiveSubsequenceOptimal(vector<int> const& arr) {
     int len{static_cast<int>(arr.size())};
 
-    if (K > len) {
-        return {};
-    } else {
-        unordered_map<int, int> mp{};
-        vector<int> ans{};
-
-        int count{};
-        int X{len/K};
-
-        for (int i = 0; i < len; ++i) {
-            if (++mp[arr[i]] == X+1) {
-                ans.push_back(arr[i]);
-                ++count;
-            }
-        }
-        return ans;
+    if (len == 0) {
+        return 0;
+    } else if (len == 1) {
+        return 1;
     }
+
+    unordered_map<int, int> mp{}; // to find consecutive shorter/larger item
+
+    for (int i = 0; i < len; ++i) { // fill the map
+        mp[arr[i]]++;
+    }
+
+    int count{1}, max{1}; // default value
+    for (int i = 0; i < len; ++i) {
+        auto it{mp.find(arr[i]-1)}; // finding consecutive shorter item
+        if (it != mp.end()) {
+            continue;
+        } else {
+            int item{arr[i]+1}; // consequetive larger item
+            it = mp.find(item);
+
+            while (it != mp.end()) {
+                ++count;
+                item = item+1;
+                it = mp.find(item);
+            }
+
+            if (count > max) {
+                max = count;
+            }
+
+            count = 1; // reset for the next subsequence
+        }
+    }
+    return max;
 }
 
 int main() {
-    vector<int> arr{3,1,2,2,1,2,3,3};
+    // string str{"1234"};
+    // Subsequence(str, "", 0, str.size());
+
+    // vector<int> arr{1,1,1,1,1};
     // vector<int> arr{};
-    // auto result{ElementFrequencyGreaterThanX(arr, 4)};
-    auto result{ElementFrequencyGreaterThanXOptimal(arr, 4)};
-    Print(result);
+    vector<int> arr{2,6,1,9,4,5,3};
+    // cout << LongestConsecutiveSubsequence(arr); // O(NLogN)
+    cout << LongestConsecutiveSubsequenceOptimal(arr);
 }

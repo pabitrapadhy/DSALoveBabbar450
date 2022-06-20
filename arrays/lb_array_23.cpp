@@ -1,92 +1,45 @@
 #include<iostream>
-#include<string>
 #include<vector>
 #include<algorithm>
-#include<unordered_map>
 
 using namespace std;
+using LL = long long;
 
-void Subsequence(string const& str, string prefix, int start, int const& N) {
-    for (int i = start; i < N; ++i) {
-        string subSeq{prefix+str[i]};
-        cout << subSeq << " ";
-        Subsequence(str, subSeq, i+1, N);
-        cout << endl;
-    }
-}
-
-int LongestConsecutiveSubsequence(vector<int>& arr) {
-    int N{static_cast<int>(arr.size())};
-    if (N == 0) {
-        return 0;
-    } else if (N == 1) {
-        return 1;
-    }
-
-    sort(arr.begin(), arr.end());
-
-    int max{1}, count{1};
-    for (int i = 1; i < N; ++i) {
-        if (arr[i-1] == arr[i]) {
-            continue;
-        } else if (arr[i-1] + 1 == arr[i]) {
-            if (++count > max) {
-                max = count;
-            }
-        } else {
-            count = 1; // for next subsequence
-        }
-    }
-    return max;
-}
-
-int LongestConsecutiveSubsequenceOptimal(vector<int> const& arr) {
+LL MaximumProductSubarray(vector<int> const& arr) {
     int len{static_cast<int>(arr.size())};
-
-    if (len == 0) {
-        return 0;
-    } else if (len == 1) {
-        return 1;
+    if (len == 1) {
+        return arr[0];
     }
 
-    unordered_map<int, int> mp{}; // to find consecutive shorter/larger item
+    LL maxProd{arr[0]};
+    LL mini{arr[0]}, maxi{arr[0]};
 
-    for (int i = 0; i < len; ++i) { // fill the map
-        mp[arr[i]]++;
-    }
+    for (int i = 1; i < len; ++i) {
+        LL item{static_cast<LL>(arr[i])};
+        if (item < 0) {
+            swap(mini, maxi);
+        }
 
-    int count{1}, max{1}; // default value
-    for (int i = 0; i < len; ++i) {
-        auto it{mp.find(arr[i]-1)}; // finding consecutive shorter item
-        if (it != mp.end()) {
-            continue;
-        } else {
-            int item{arr[i]+1}; // consequetive larger item
-            it = mp.find(item);
+        maxi = max(maxi*item, item); // calculating new maxi
+        mini = min(mini*item, item); // calculating new mini
 
-            while (it != mp.end()) {
-                ++count;
-                item = item+1;
-                it = mp.find(item);
-            }
+        if (maxi > maxProd) { // updating maxProd
+            maxProd = maxi;
+        }
 
-            if (count > max) {
-                max = count;
-            }
-
-            count = 1; // reset for the next subsequence
+        if (item == 0) { // for the next item
+            maxi = 1;
+            mini = 1;
         }
     }
-    return max;
+
+    return maxProd;
 }
 
 int main() {
-    // string str{"1234"};
-    // Subsequence(str, "", 0, str.size());
-
-    // vector<int> arr{1,1,1,1,1};
-    // vector<int> arr{};
-    vector<int> arr{2,6,1,9,4,5,3};
-    // cout << LongestConsecutiveSubsequence(arr); // O(NLogN)
-    cout << LongestConsecutiveSubsequenceOptimal(arr);
+    // vector<int> arr{-1,2,4,-3,0,1,7,7};
+    // vector<int> arr{6,-3,-10,0,2};
+    // vector<int> arr{2,3,4,5,-1,0};
+    vector<int> arr{-1,0};
+    cout << MaximumProductSubarray(arr);
 }

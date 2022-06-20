@@ -1,74 +1,40 @@
 #include<iostream>
 #include<vector>
+#include<unordered_map>
 
 using namespace std;
 
-using VecInt = vector<int>;
-using VecIntCR = vector<int> const&;
-using IIPair = pair<int, int>;
-using IIPairCR = pair<int, int> const&;
+int CountPairsWithGivenSum(vector<int> const& arr, int k) {
+    int numPairs{};
+    int len{static_cast<int>(arr.size())};
+    unordered_map<int, int> freqMap{};
 
-void Print(VecIntCR result) {
-    for (auto const& item : result) {
-        cout << item << " ";
+    for (int i = 0; i < len; ++i) {
+        freqMap[arr[i]]++;
     }
-    cout << endl;
-}
 
-IIPairCR FindMin(IIPairCR x, IIPairCR y, IIPairCR z) {
-    IIPairCR k{x < y ? x : y};
-    return z < k ? z : k;
-}
+    int count{};
+    for (int i = 0; i < len; ++i) {
+        auto it = freqMap.find(k-arr[i]);
+        if (it != freqMap.end()) {
+            count += it->second; // add the frequency count
 
-VecInt FindCommonElements(VecIntCR A, VecIntCR B, VecIntCR C) {
-    VecInt result{};
-
-    int lenA{static_cast<int>(A.size())};
-    int lenB{static_cast<int>(B.size())};
-    int lenC{static_cast<int>(C.size())};
-
-    int p{}, q{}, r{};
-
-    while (p < lenA && q < lenB && r < lenC) {
-        if (A[p] == B[q] && B[q] == C[r]) {
-            if (result.empty() || result[result.size()-1] != A[p]) {
-                result.push_back(A[p]);
-            }
-            ++p, ++q, ++r;
-        } else {
-            IIPair x{A[p], p};
-            IIPair y{B[q], q};
-            IIPair z{C[r], r};
-
-            IIPairCR minPair{FindMin(x, y, z)};
-            const int& minItem{minPair.first};
-            
-            if (minItem == A[p]) {
-                ++p;
-            } else if (minItem == B[q]) {
-                ++q;
-            } else {
-                ++r;
+            if (k-arr[i] == arr[i]) { // pair with itself (e.g. 1,1,1,1)
+                --count; // removing once because frequency for reverse self-loop was not included.
             }
         }
     }
 
-    return result;
+    numPairs = count/2; // removing duplicate pairs (i.e. only upper triangular matrix considered)
+    return numPairs;
 }
 
 int main() {
-    // VecInt A{3,4,5,6,7,8};
-    // VecInt B{3,5,9};
-    // VecInt C{3,5,9,11,14};
+    // int k{6};
+    // vector<int> arr{1,5,7,1}; // 2
 
-    // VecInt A{1,5,10,20,40,80};
-    // VecInt B{6,7,20,80,100};
-    // VecInt C{3,4,15,20,30,70,80,120};
+    int k{2};
+    vector<int> arr{1,1,1,1}; // 6
 
-    VecInt A{1,1,1,1};
-    VecInt B{1,1,1,1};
-    VecInt C{1,1,1,1};
-
-    VecIntCR result{FindCommonElements(A, B, C)};
-    Print(result);
+    cout << CountPairsWithGivenSum(arr, k);
 }

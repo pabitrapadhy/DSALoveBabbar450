@@ -4,51 +4,49 @@
 
 using namespace std;
 
-void Print(vector<int> const& arr) {
-    for (auto const& i : arr) {
-        cout << i << " ";
+using Intervals = vector<vector<int>>;
+
+void PrintIntervals(Intervals const& arr) {
+    for (auto const& interval : arr) {
+        cout << "{" << interval[0] << "," << interval[1] << "},";
     }
     cout << endl;
 }
 
-int FindSwapIndex(vector<int> const& arr, int k, int start, int end) {
-    for (int i = start; i >= end; --i) {
-        if (arr[i] > k) {
-            return i;
-        }
-    }
-    return start;
+bool IsOverlapping(vector<int> const& X, vector<int> const& Y) {
+    return (Y[0] - X[1]) < 1;
 }
 
-void FindNextPermutation(vector<int>& arr) {
-    auto len{arr.size()}; // unsigned long
-    if (len < 2) {
+void MergeIntervals(Intervals& arr, Intervals& ans) {
+    auto len{arr.size()};
+    if (len == 1) {
+        ans = arr;
         return;
     }
 
-    int i{len-2};
-    int j{len-1};
+    sort(arr.begin(), arr.end()); // sorted
 
-    while (i >= 0) {
-        if (arr[i] < arr[j]) {
-            int swapIdx{FindSwapIndex(arr, arr[i], len-1, j)};
-            swap(arr[i], arr[swapIdx]);
-            reverse(next(arr.begin(), j), arr.end());
-            return;
+    auto maxInterval{arr[0]}; // set 1st item to max interval
+
+    for (auto it = next(arr.begin()); it != arr.end(); ++it) {
+        auto interval{*it};
+        if (IsOverlapping(maxInterval, interval)) {
+            maxInterval[1] = max(maxInterval[1], interval[1]); // update range
         } else {
-            --i;
-            --j;
+            ans.push_back(maxInterval);
+            maxInterval = interval;
         }
     }
 
-    reverse(arr.begin(), arr.end());
+    ans.push_back(maxInterval);
 }
 
 int main() {
-    // vector<int> arr{3,2,1};
-    // vector<int> arr{1,4,3,2};
-    // vector<int> arr{2,1};
-    vector<int> arr{1,3,2};
-    FindNextPermutation(arr);
-    Print(arr);
+    // [[1,3],[2,6],[8,10],[15,18]]
+    // Intervals arr{{1,3},{2,6},{8,10},{15,18}};
+    Intervals arr{{1,4},{2,3}};
+    Intervals ans{};
+    PrintIntervals(arr);
+    MergeIntervals(arr, ans); 
+    PrintIntervals(ans);
 }

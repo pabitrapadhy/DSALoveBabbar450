@@ -1,40 +1,32 @@
 #include<iostream>
 #include<vector>
-#include<unordered_map>
 
 using namespace std;
 
-int CountPairsWithGivenSum(vector<int> const& arr, int k) {
-    int numPairs{};
+int FindMaxProfit(vector<int> const& arr) {
     int len{static_cast<int>(arr.size())};
-    unordered_map<int, int> freqMap{};
-
-    for (int i = 0; i < len; ++i) {
-        freqMap[arr[i]]++;
+    if (len == 1) {
+        return 0;
     }
 
-    int count{};
-    for (int i = 0; i < len; ++i) {
-        auto it = freqMap.find(k-arr[i]);
-        if (it != freqMap.end()) {
-            count += it->second; // add the frequency count
+    int purchasePrice{arr[0]};
+    int profit{}, maxProfit{};
 
-            if (k-arr[i] == arr[i]) { // pair with itself (e.g. 1,1,1,1)
-                --count; // removing once because frequency for reverse self-loop was not included.
-            }
+    for (int i = 1; i < len; ++i) {
+        int sellPrice{arr[i]};
+        if (sellPrice < purchasePrice) {
+            purchasePrice = arr[i];
         }
+
+        profit = sellPrice - purchasePrice;
+        maxProfit = max(maxProfit, profit);
     }
 
-    numPairs = count/2; // removing duplicate pairs (i.e. only upper triangular matrix considered)
-    return numPairs;
+    return maxProfit;
 }
 
 int main() {
-    // int k{6};
-    // vector<int> arr{1,5,7,1}; // 2
-
-    int k{2};
-    vector<int> arr{1,1,1,1}; // 6
-
-    cout << CountPairsWithGivenSum(arr, k);
+    vector<int> arr{7,1,5,3,6,4};
+    vector<int> arr{7,3,5,6,2,4};
+    cout << FindMaxProfit(arr);
 }
