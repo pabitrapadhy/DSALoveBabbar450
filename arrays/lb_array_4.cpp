@@ -26,12 +26,39 @@ void SortZeroOneTwo(vector<int>& arr, vector<int> const& types) {
     }
 }
 
-int main() {
-    int low{10}, mid{14}, high{22};
-    vector<int> types{low, mid};
-
-    vector<int> arr{high, low, mid, high, low, mid}; // i/p
+void DNFSort(vector<int>& arr) {
+    int len{static_cast<int>(arr.size())};
     
-    SortZeroOneTwo(arr, types);
+    int low{}, mid{};
+    int high{len-1};
+
+    while (mid <= high) {
+        switch (arr[mid]) {
+            case 0:
+                swap(arr[mid], arr[low]);
+                ++low;
+                ++mid;
+                break;
+            case 1:
+                ++mid;
+                break;
+            case 2:
+                swap(arr[mid], arr[high]);
+                --high;
+                break;
+        }
+    }
+}
+
+int main() {
+    // int low{10}, mid{14}, high{22};
+    // vector<int> types{low, mid};
+
+    // vector<int> arr{high, low, mid, high, low, mid}; // i/p
+    
+    // SortZeroOneTwo(arr, types);
+
+    vector<int> arr{0,0,1,2,0,1,1,1,2,0};
+    DNFSort(arr);
     Print(arr);
 }
