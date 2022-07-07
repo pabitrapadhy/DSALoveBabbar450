@@ -7,20 +7,27 @@ int FindMinJumps(vector<int> const& arr) {
     const auto len{arr.size()};
     int numJumps{0};
 
+    // NOTE:
+    // -----
+    // Biggest item in the lot is not the biggest jump.
+    // It is also important to know if the biggest item is towards the end of our lot.
+    // then we can jump farthest.
+    // To identify this, we always add item+index, 
+    // because that sum will identify the item giving farthest jump.
     for (int i = 0; i < len-1; ) {
         int item{arr[i]};
         if (item == 0) {
             return -1; // zero item case
-        } else if (i+item >= len-1) {
+        } else if (i+item >= len-1) { // NOTE: i+item to identify farthest jump
             ++numJumps;
             return numJumps; // reaching/overshooting last element with next jump
         } else {
             int max{0};
             int jumpIdx{i};
 
-            // find the biggest item of the lot to jump longest
+            // find the item that gives farthest jump to reach end quickly
             for (int j = i+1; j <= i+item; ++j) {
-                if (arr[j]+j >= max) {
+                if (arr[j]+j >= max) { // NOTE: arr[j]+j to identify farthest jump
                     max = arr[j]+j;
                     jumpIdx = j;
                 }
