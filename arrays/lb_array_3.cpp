@@ -9,21 +9,28 @@ struct MyCompare {
 
 struct Greater : public MyCompare {
     bool operator() (const int x, const int y) const override {
-        return x > y;
+        return x >= y;
     }
 };
 
 struct Lesser : public MyCompare {
     bool operator() (const int x, const int y) const override {
-        return x < y;
+        return x <= y;
     }
 };
+
+void Print(vector<int> const& arr, int start, int end) {
+    for (int i = start; i <= end; ++i) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
 
 int Partitioning(vector<int>& arr, int start, int end, MyCompare const& cmp) {
     int pivot{end};
     int hole{start};
     
-    for (int i = 0; i < end; ++i) {
+    for (int i = start; i < end; ++i) {
         if (cmp(arr[i], arr[pivot])) {
             swap(arr[i], arr[hole]);
             ++hole;
@@ -35,7 +42,7 @@ int Partitioning(vector<int>& arr, int start, int end, MyCompare const& cmp) {
 
 int RandomizedPartitioning(vector<int>& arr, int start, int end, MyCompare const& cmp) {
     srand(time(0));
-    int pIndex{start + rand() % end};
+    int pIndex{start + rand() % (end-start+1)};
     swap(arr[pIndex], arr[end]);
     return Partitioning(arr, start, end, cmp);
 }
@@ -54,8 +61,11 @@ int FindKthElement(vector<int>& arr, int start, int end, int k, MyCompare const&
 }
 
 int main() {
-    vector<int> arr{4,3,5,1,2};
+    // vector<int> arr{7,10,4,4,7,20,15};
+    // int k{4};
+    vector<int> arr{7,10,4,3,20,15};
+    int k{3};
     Lesser ls{};
     Greater gs{};
-    cout << FindKthElement(arr, 0, arr.size()-1, 2, gs); // largest/smallest by comparator
+    cout << FindKthElement(arr, 0, arr.size()-1, k, ls); // largest/smallest by comparator
 }
