@@ -1,48 +1,38 @@
 #include<iostream>
 #include<vector>
 #include<unordered_map>
+#include<unordered_set>
 
 using namespace std;
 
-int FindNumUnion(vector<int> const& m, vector<int> const& n) {
-    unordered_map<int, char> mp{};
-    auto lenM{m.size()};
-    auto lenN{n.size()};
+int FindDistinctElements(vector<int> const& A, vector<int> const& B) {
+    unordered_map<int, bool> mp{};
+    int n{static_cast<int>(A.size())};
+    int m{static_cast<int>(B.size())};
 
-    for (int i = 0; i < lenM; ++i) {
-        mp[m[i]];
-    }
-
-    int dCount{0};
-    for (int i = 0; i < lenN; ++i) {
-        if (mp.find(n[i]) != mp.end()) {
-            ++dCount;
+    for (int i = 0; i < n; ++i) {
+        if (mp.find(A[i]) == mp.end()) { // ignoring duplicate elements
+            mp[A[i]];
         }
     }
-    return lenM + lenN - dCount;
+    
+    for (int i = 0; i < m; ++i) {
+        if (mp.find(B[i]) == mp.end()) { // ignoring duplicate elements
+            mp[B[i]];
+        }
+    }
+    
+    return mp.size();
 }
 
-int FindNumIntersection(vector<int> const& m, vector<int> const& n) {
-    unordered_map<int, char> mp{};
-    auto lenM{m.size()};
-    auto lenN{n.size()};
-
-    for (int i = 0; i < lenM; ++i) {
-        mp[m[i]];
-    }
-
-    int dCount{0};
-    for (int i = 0; i < lenN; ++i) {
-        if (mp.find(n[i]) != mp.end()) {
-            ++dCount;
-        }
-    }
-    return dCount;
+int FindDistinctElementsOptimal(vector<int> const& A, vector<int> const& B) {
+    unordered_set<int> st{A.begin(), A.end()};
+    st.insert(B.begin(), B.end());
+    return st.size();
 }
 
 int main() {
-   vector<int> m{1,2,3,4,5};
-   vector<int> n{1,3,7};
-   cout << FindNumUnion(m, n) << endl;
-   cout << FindNumIntersection(m, n) << endl;
+    vector<int> A{1,2,3,4,5};
+    vector<int> B{1,2};
+    cout << FindDistinctElementsOptimal(A, B);
 }
