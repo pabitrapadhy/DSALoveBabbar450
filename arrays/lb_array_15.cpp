@@ -13,7 +13,7 @@ void Print(vector<int> const& arr) {
 
 int FindSwapIndex(vector<int> const& arr, int k, int start, int end) {
     for (int i = start; i >= end; --i) {
-        if (arr[i] > k) {
+        if (arr[i] > k) { // item bigger than k is the next bigger item to swap
             return i;
         }
     }
@@ -21,7 +21,7 @@ int FindSwapIndex(vector<int> const& arr, int k, int start, int end) {
 }
 
 void FindNextPermutation(vector<int>& arr) {
-    auto len{arr.size()}; // unsigned long
+    int len{static_cast<int>(arr.size())};
     if (len < 2) {
         return;
     }
@@ -30,10 +30,10 @@ void FindNextPermutation(vector<int>& arr) {
     int j{len-1};
 
     while (i >= 0) {
-        if (arr[i] < arr[j]) {
+        if (arr[i] < arr[j]) { // boundary wall between i and j
             int swapIdx{FindSwapIndex(arr, arr[i], len-1, j)};
             swap(arr[i], arr[swapIdx]);
-            reverse(next(arr.begin(), j), arr.end());
+            reverse(next(arr.begin(), j), arr.end()); // after swapping, reverse from boundary to end.
             return;
         } else {
             --i;
