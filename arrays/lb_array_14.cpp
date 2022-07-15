@@ -26,25 +26,27 @@ void MergeIntervals(Intervals& arr, Intervals& ans) {
 
     sort(arr.begin(), arr.end()); // sorted
 
-    auto maxInterval{arr[0]}; // set 1st item to max interval
+    auto currInterval{arr[0]}; // set 1st item to currInterval
 
     for (auto it = next(arr.begin()); it != arr.end(); ++it) {
         auto interval{*it};
-        if (IsOverlapping(maxInterval, interval)) {
-            maxInterval[1] = max(maxInterval[1], interval[1]); // update range
+        if (IsOverlapping(currInterval, interval)) {
+            currInterval[1] = max(currInterval[1], interval[1]); // update range
         } else {
-            ans.push_back(maxInterval);
-            maxInterval = interval;
+            ans.push_back(currInterval);
+            currInterval = interval;
         }
     }
 
-    ans.push_back(maxInterval);
+    ans.push_back(currInterval);
 }
 
 int main() {
     // [[1,3],[2,6],[8,10],[15,18]]
     // Intervals arr{{1,3},{2,6},{8,10},{15,18}};
-    Intervals arr{{1,4},{2,3}};
+    // Intervals arr{{1,4},{2,3}};
+    Intervals arr{{1,2},{3,4}};
+
     Intervals ans{};
     PrintIntervals(arr);
     MergeIntervals(arr, ans); 
