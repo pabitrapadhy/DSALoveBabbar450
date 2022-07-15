@@ -3,11 +3,19 @@
 
 using namespace std;
 
-void Print(vector<int> const& arr) {
-    for (auto const& i : arr) {
-        cout << i << " ";
+void GetInversionCount(vector<int>& arr) {
+    int invCount{};
+    int len{static_cast<int>(arr.size())};
+
+    for (int i = 0; i < len-1; ++i) {
+        for (int j = i+1; j < len; ++j) {
+            if (arr[i] > arr[j]) { // checks all n^2 pairs
+                ++invCount;
+            }
+        }
     }
-    cout << endl;
+
+    cout << "invCount: " << invCount << endl;
 }
 
 void Merge(vector<int>& arr, int first, int mid, int last, int& invCount) {
@@ -29,7 +37,7 @@ void Merge(vector<int>& arr, int first, int mid, int last, int& invCount) {
             ++k;
             ++i;
         } else {
-            invCount += lenLeft-i;
+            invCount += lenLeft-i; // only change in merge sort to calculate inversion count
 
             arr[k] = right[j];
             ++k;
@@ -49,28 +57,13 @@ void Merge(vector<int>& arr, int first, int mid, int last, int& invCount) {
     }
 }
 
-void GetInversionCount(vector<int>& arr, int first, int last, int& invCount) {
+void GetInversionCountOptimal(vector<int>& arr, int first, int last, int& invCount) {
     if (first < last) {
-        int mid{first + (last-first)/2};
-        GetInversionCount(arr, first, mid, invCount);
-        GetInversionCount(arr, mid+1, last, invCount);
+        int mid{first + (last-first)/2}; // avoids integer overflow
+        GetInversionCountOptimal(arr, first, mid, invCount);
+        GetInversionCountOptimal(arr, mid+1, last, invCount);
         Merge(arr, first, mid, last, invCount);
     }
-}
-
-void GetInversion(vector<int>& arr) {
-    int invCount{};
-    int len{static_cast<int>(arr.size())};
-
-    for (int i = 0; i < len-1; ++i) {
-        for (int j = i+1; j < len; ++j) {
-            if (arr[i] > arr[j]) {
-                ++invCount;
-            }
-        }
-    }
-
-    cout << "invCount: " << invCount << endl;
 }
 
 int main() {
@@ -78,14 +71,12 @@ int main() {
     // vector<int> arr{5,2,1,3,4};
     // vector<int> arr{2,4,1,3,5};
     // vector<int> arr{6,5,4,3,2,1};
-    vector<int> arr{468,335,1,170,225,479,359,463,465,206,146,282,328,462,492,496,443,328,437,392,105,403,154,293,383,422,217,219,396,448,227,272,39,370,413,168,300,36,395,204,312,323};
     // vector<int> arr{10,6,4,2,1,3,5,7,9};
-
+    vector<int> arr{468,335,1,170,225,479,359,463,465,206,146,282,328,462,492,496,443,328,437,392,105,403,154,293,383,422,217,219,396,448,227,272,39,370,413,168,300,36,395,204,312,323};
     vector<int> brr{arr};
 
-    GetInversionCount(arr, 0, arr.size()-1, invCount);
-    Print(arr);
+    GetInversionCountOptimal(arr, 0, arr.size()-1, invCount);
     cout << "invCount: " << invCount << endl;
 
-    GetInversion(brr);
+    GetInversionCount(brr); // for verification
 }
