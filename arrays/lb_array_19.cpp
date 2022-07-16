@@ -5,8 +5,6 @@ using namespace std;
 
 using VecInt = vector<int>;
 using VecIntCR = vector<int> const&;
-using IIPair = pair<int, int>;
-using IIPairCR = pair<int, int> const&;
 
 void Print(VecIntCR result) {
     for (auto const& item : result) {
@@ -15,9 +13,8 @@ void Print(VecIntCR result) {
     cout << endl;
 }
 
-IIPairCR FindMin(IIPairCR x, IIPairCR y, IIPairCR z) {
-    IIPairCR k{x < y ? x : y};
-    return z < k ? z : k;
+void AdvanceMinimum(VecIntCR A, VecIntCR B, VecIntCR C, int& p, int& q, int& r) {
+    A[p] < B[q] ? (A[p] < C[r] ? ++p : ++r) : (B[q] < C[r] ? ++q : ++r);
 }
 
 VecInt FindCommonElements(VecIntCR A, VecIntCR B, VecIntCR C) {
@@ -36,20 +33,7 @@ VecInt FindCommonElements(VecIntCR A, VecIntCR B, VecIntCR C) {
             }
             ++p, ++q, ++r;
         } else {
-            IIPair x{A[p], p};
-            IIPair y{B[q], q};
-            IIPair z{C[r], r};
-
-            IIPairCR minPair{FindMin(x, y, z)};
-            const int& minItem{minPair.first};
-            
-            if (minItem == A[p]) {
-                ++p;
-            } else if (minItem == B[q]) {
-                ++q;
-            } else {
-                ++r;
-            }
+            AdvanceMinimum(A, B, C, p, q, r);
         }
     }
 
